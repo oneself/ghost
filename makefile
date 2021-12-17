@@ -12,7 +12,7 @@ run:
 build_run: build run
 
 test:
-	go test
+	go test -v ./...
 
 init:
 	go mod init ${BINARY_NAME}

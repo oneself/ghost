@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"strings"
 	"math/rand"
-	"time"
 	"regexp"
 )
 
@@ -27,7 +26,8 @@ var (
 )
 
 func init() {
-	rand.Seed(time.Now().Unix())
+	//rand.Seed(time.Now().Unix())
+	rand.Seed(1)
 	ghostFilename = regexp.MustCompile(`"/?[^-]+-[^-]+-[^-]+-[^-]+\.png"`)
 }
 

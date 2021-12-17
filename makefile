@@ -7,7 +7,7 @@ build:
 #GOARCH=amd64 GOOS=window go build -o ${BINARY_NAME}-windows main.go
 
 run:
-	go run . --dir .. --count 10
+	go run . --dir ~/dropbox/Ghost --count 10
 
 build_run: build run
 

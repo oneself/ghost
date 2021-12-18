@@ -9,26 +9,14 @@ import (
 	"regexp"
 )
 
-
-// out/back04-yellow_body-smile-irish_cap_gray_irish_cap.png
-// out/back06-white_body-surprised-party_hat_brown_party_hat.png
-// out/back08-blue_body-cat-viking_helmet_pink_viking_helmet.png
-// out/back08-pink_body-cat-sombrero_purple_sombrero.png
-// out/back08-white_body-sad-viking_helmet_red_viking_helmet.png
-// out/back09-green_body-surprised-baseball_cap_orange_baseball_cap.png
-// out/back10-brown_body-strait-sombrero_red.png
-// out/back11-beige_body-cat-wizard_hat_brown_wizard_hat.png
-// out/back13-blue_body-sad-santa_hat_yellow_santa_hat.png
-// out/back13-purple_body-very_happy-wizard_hat_red_wizard_hat.png
-
 var (
-	ghostFilename *regexp.Regexp
+	ghostFilenameReg *regexp.Regexp
 )
 
 func init() {
 	//rand.Seed(time.Now().Unix())
 	rand.Seed(1)
-	ghostFilename = regexp.MustCompile(`"/?[^-]+-[^-]+-[^-]+-[^-]+\.png"`)
+	ghostFilenameReg = regexp.MustCompile(`"/?[^-]+-[^-]+-[^-]+-[^-]+\.png"`)
 }
 
 type Image struct {
@@ -43,9 +31,6 @@ type Ghost struct {
 	hat Image
 }
 
-//func NewGhost(filename fn) Ghost {
-//
-//}
 
 // Name the ghost based on its parts
 func (g Ghost) name() string {
@@ -94,15 +79,27 @@ func CreateGhostImageCommands(outdir string, ghosts []Ghost) []exec.Cmd {
 
 // Create a list of ghosts based on lists of ghost parts.
 // The list will contain `count` ghosts picked at random.
-func CreateGhosts(backs []Image, bodies []Image, faces []Image, hats []Image, count int) []Ghost {
-	var ghosts = make([]Ghost, count)
-	for i := 0; i < len(ghosts); i++ {
-		ghosts[i] = Ghost{
+func CreateGhosts(backs []Image, bodies []Image, faces []Image, hats []Image, count int, exclude []Image) []Ghost {
+	exc := make(map[string]bool)
+	for _, e := range exclude {
+		exc[e.name] = true
+	}
+
+	//fmt.Println("len(exc):", len(exc))
+	//fmt.Println("exc:", exc)
+
+	var ghosts []Ghost
+	for ; len(ghosts) < count; {
+		ghost := Ghost{
 			backs[rand.Intn(len(backs))],
 			bodies[rand.Intn(len(bodies))],
 			faces[rand.Intn(len(faces))],
 			hats[rand.Intn(len(hats))],
 		}
+		if _, exists := exc[ghost.name()]; !exists {
+			ghosts = append(ghosts, ghost)
+		}
 	}
 	return ghosts
+
 }

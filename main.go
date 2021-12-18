@@ -22,22 +22,26 @@ func init() {
 
 func main() {
 	flag.Parse()
+	outdir := filepath.Join(*basedir, "out")
+	os.Mkdir(outdir, 0755)
+
 	fmt.Println("basedir:", *basedir)
+	fmt.Println("outdir:", outdir)
+
 
 	backs, backsErr := ghostlib.GetImageFilenames(filepath.Join(*basedir, "backs"))
 	bodies, bodiesErr := ghostlib.GetImageFilenames(filepath.Join(*basedir, "bodies"))
 	faces, facesErr := ghostlib.GetImageFilenames(filepath.Join(*basedir, "faces"))
 	hats, hatsErr := ghostlib.GetImageFilenames(filepath.Join(*basedir, "hats"))
-	handleErrors(backsErr, bodiesErr, facesErr, hatsErr)
+	outs, outsErr := ghostlib.GetImageFilenames(outdir)
+	handleErrors(backsErr, bodiesErr, facesErr, hatsErr, outsErr)
 
 	//fmt.Println("bodies:", bodies)
   //fmt.Println("faces:", faces)
 	//fmt.Println("hats:", hats)
 	//fmt.Println("backs:", backs)
 
-	outdir := filepath.Join(*basedir, "out")
-	os.Mkdir(outdir, 0755)
-	ghosts := ghostlib.CreateGhosts(backs, bodies, faces, hats, *count)
+	ghosts := ghostlib.CreateGhosts(backs, bodies, faces, hats, *count, outs)
 	cmds := ghostlib.CreateGhostImageCommands(outdir, ghosts)
 
 	for _, cmd := range cmds {

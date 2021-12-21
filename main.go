@@ -22,27 +22,27 @@ func init() {
 
 func main() {
 	flag.Parse()
-	outdir := filepath.Join(*basedir, "out")
-	os.Mkdir(outdir, 0755)
+	gendir := filepath.Join(*basedir, "gen")
+	seldir := filepath.Join(*basedir, "sel")
+	os.Mkdir(gendir, 0755)
 
 	fmt.Println("basedir:", *basedir)
-	fmt.Println("outdir:", outdir)
-
 
 	backs, backsErr := ghostlib.GetImageFilenames(filepath.Join(*basedir, "backs"))
 	bodies, bodiesErr := ghostlib.GetImageFilenames(filepath.Join(*basedir, "bodies"))
 	faces, facesErr := ghostlib.GetImageFilenames(filepath.Join(*basedir, "faces"))
 	hats, hatsErr := ghostlib.GetImageFilenames(filepath.Join(*basedir, "hats"))
-	outs, outsErr := ghostlib.GetImageFilenames(outdir)
-	handleErrors(backsErr, bodiesErr, facesErr, hatsErr, outsErr)
+	gens, gensErr := ghostlib.GetImageFilenames(gendir)
+	sels, selsErr := ghostlib.GetImageFilenames(seldir)
+	handleErrors(backsErr, bodiesErr, facesErr, hatsErr, gensErr, selsErr)
 
 	//fmt.Println("bodies:", bodies)
   //fmt.Println("faces:", faces)
 	//fmt.Println("hats:", hats)
 	//fmt.Println("backs:", backs)
 
-	ghosts := ghostlib.CreateGhosts(backs, bodies, faces, hats, *count, outs)
-	cmds := ghostlib.CreateGhostImageCommands(outdir, ghosts)
+	ghosts := ghostlib.CreateGhosts(backs, bodies, faces, hats, *count, append(gens, sels...))
+	cmds := ghostlib.CreateGhostImageCommands(gendir, ghosts)
 
 	for _, cmd := range cmds {
 		fmt.Println(cmd.String())
